@@ -1,0 +1,37 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #144A71; 
+}
+
+.white-header {
+    padding: 5px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    color: #000;
+    border-bottom: 0px solid #000; 
+}
+
+h1 {
+    font-size: 19px;
+    margin: 0;
+}
+
+.header-links {
+    display: flex;
+    margin-left: auto; /* Pushes the links to the right */
+}
+
+.header-links a {
+    margin-left: 10px; 
+    text-decoration: none;
+    color: #000; 
+}
+
+.header-links a:not(:last-child)::after {
+    content: "|";
+    margin-left: 10px; 
+    color: #000; 
+}

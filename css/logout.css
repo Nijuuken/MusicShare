@@ -1,0 +1,11 @@
+.logout-message {
+    font-size: 18px;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+    color: white; 
+}
+
+.logout-message a {
+    color: orange; /* Set link color to orange */
+}
