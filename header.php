@@ -9,7 +9,10 @@ session_start();
     <title>Sign In - Task Management</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/authForm.css">
+    <link rel="stylesheet" href="css/listen.css">
     <link rel="stylesheet" href="css/logout.css">
+    <link rel="stylesheet" href="css/upload.css"> 
+    <link rel="stylesheet" href="css/profile.css">
     <link rel="stylesheet" href="css/header.css">
 </head>
 <body>
@@ -18,7 +21,7 @@ session_start();
         <div class="header-links">
         <?php
             if(isset($_SESSION["userid"])){
-                echo '<a href="profile.php">' . $_SESSION["username"] . '</a>';
+                echo '<a href="profile.php?user=' . $_SESSION["username"] . '">' . $_SESSION["username"] . '</a>';
                 echo '<a href="logout.php">Log Out</a>';
             } else {
                 echo '<a href="authForm.php?section=signin">Login</a>';

@@ -1,0 +1,36 @@
+.upload-box {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    
+}
+
+.upload-box h1 {
+    text-align: center;
+    font-size: 30px;
+}
+
+.upload-box ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.upload-box li {
+    margin-bottom: 10px;
+}
+
+.upload-box a {
+    text-decoration: none;
+    color: #333333;
+}
+
+#uploadsList {
+    flex-basis: calc(50% - 10px); /* 50% width with a 10px gap between columns */
+    box-sizing: border-box;
+}
+.delete-button {
+    align-self: flex-end; 
+    text-align: right;
+}
