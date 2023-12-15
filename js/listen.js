@@ -1,35 +1,52 @@
 // listen.js
 
 function retrieveFile(fileName) {
-    fetch('includes/retrieveFile.inc.php', {
-        method: 'POST',
+    fetch('includes/retrieveFile.inc.php?filename=' + encodeURIComponent(fileName + ".mp3"), {
+        method: 'GET',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-            submit: '1',
-            filename: fileName + ".mp3", // Concatenate ".mp3" here
-        }),
+            'Content-Type': 'application/json',
+        }
     })
     .then(response => {
-        console.log("Response",response);
-        //return response.json()
+            return response.json();
     })
     .then(fileInformation => {
-        // Assign the retrieved information to fileInformation
-        // Use the file information as needed (e.g., display it on the page)
-        console.log(fileInformation);
-        console.log('File ID:', fileInformation.fileID);
-        console.log('Original File Name:', fileInformation.originalFileName);
-        console.log('Stored File Name:', fileInformation.storedFileName);
-        console.log('Upload Date:', fileInformation.uploadDate);
-        console.log('Username:', fileInformation.username);
-        // Set the source of the audio element dynamically
-        const audioSource = document.getElementById('audioSource');
-        audioSource.src = 'upload/' + fileInformation.storedFileName;
+        //  console.log(fileInformation);
+        //  console.log('File ID:', fileInformation.fileID);
+        //  console.log('Original File Name:', fileInformation.originalFileName);
+        //  console.log('Stored File Name:', fileInformation.storedFileName);
+        //  console.log('Upload Date:', fileInformation.uploadDate);
+        //  console.log('Username:', fileInformation.username);
+        
+        const listenTitleElement = document.querySelector('.listenTitle');
+        listenTitleElement.textContent = fileInformation.title;
+        const listenSubText = document.querySelector('.listenSubText');
+        listenSubText.textContent = 'Uploaded by: ' + fileInformation.username;
+        console.log(fileInformation.title)
+        const audioElement = document.getElementById('myAudio');
+        audioElement.src = 'upload/' + fileInformation.storedFileName;
+        audioElement.type = 'audio/mp3';
+
+        playButton.addEventListener('click', function() {
+            // Create a hidden anchor element
+            const downloadLink = document.createElement('a');
+            downloadLink.href = 'upload/' + fileInformation.storedFileName;
+            downloadLink.download = fileInformation.originalFileName; // Set the filename for download
+
+            // Append the anchor element to the document
+            document.body.appendChild(downloadLink);
+
+            // Trigger a click event on the anchor element
+            downloadLink.click();
+
+            // Remove the anchor element from the document
+            document.body.removeChild(downloadLink);
+        });
+    })
+    .then(id3Tags => {
+        
     })
     .catch(error => {
-        console.log(response)
         console.error('Error:', error);
     });
 }

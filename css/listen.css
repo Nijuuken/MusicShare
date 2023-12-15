@@ -1,0 +1,30 @@
+/* Center the section using flexbox */
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh; /* Set the height to 100% of the viewport height */
+}
+
+/* Apply styles to elements with the listenTitle class */
+.listenTitle {
+    color: white;
+    font-weight: bold;
+    text-align: center; 
+    margin-top: 10vh; 
+    font-size: 20px;
+}
+
+.listenSubText {
+    color: white;
+    text-align: center; 
+    font-size: 20px;
+}
+
+#audio-container {
+    text-align: center; 
+}
+
+#playButton {
+    margin-top: 20px; 
+}

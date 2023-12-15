@@ -135,38 +135,33 @@ function loginUser($conn,$username, $pwd) {
     }
 }
 
-function sendFileToDB($conn,$filename){
-    function generateRandomString($length = 10) {
+function sendFileToDB($conn, $filename, $fileTitle)
+{
+    function generateRandomString($length = 10)
+    {
         return bin2hex(random_bytes(($length + 1) / 2));
     }
 
-    // Example: Generate a random string of length 8
     $randomString = generateRandomString(12);
-
-    // Extract the file extension
     $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
-
-    // Generate a new filename with the random string and original file extension
     $newFilename = $randomString . '.' . $fileExtension;
-    
-    // Specify the destination path with the new filename
     $location = "../upload/" . $newFilename;
 
-    // Save the uploaded file to the local filesystem
     if (move_uploaded_file($_FILES['file']['tmp_name'], $location)) {
-        echo '<p>File uploaded successfully</p>';
-        
-        $sql = "INSERT INTO user_files (userID, originalFileName, storedFileName) VALUES (?, ?, ?);";
+
+        $sql = "INSERT INTO user_files (userID, originalFileName, storedFileName, title) VALUES (?, ?, ?, ?);";
         $stmt = mysqli_stmt_init($conn);
-        if (!mysqli_stmt_prepare($stmt,$sql)){
+        
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
             header("location: ../authForm.php?section=signup?error=stmtfailedcreateusr");
-            exit(); 
+            exit();
         }
-        mysqli_stmt_bind_param($stmt,"iss", $_SESSION["userid"], $filename, $newFilename);
+        mysqli_stmt_bind_param($stmt, "isss", $_SESSION["userid"], $filename, $newFilename, $fileTitle);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
-
-
+        $location = "../listen.php?v=" . pathinfo($newFilename, PATHINFO_FILENAME);
+        header("location: " . $location);
+        exit();
     } else {
         echo '<p>File upload failed!</p>';
         if ($_FILES['file']['error'] > 0) {
@@ -175,14 +170,13 @@ function sendFileToDB($conn,$filename){
     }
 }
 
-// functions.inc.php
 
 function retrieveFile($conn, $fileName) {
     $result = array();
 
     // Prepare and execute the query to retrieve file information
     $stmt = mysqli_prepare($conn, 
-    "SELECT user_files.fileID, user_files.originalFileName, user_files.storedFileName, user_files.uploadDate, userdb.username 
+    "SELECT user_files.fileID, user_files.originalFileName, user_files.storedFileName, user_files.title, user_files.uploadDate, userdb.username
     FROM user_files 
     INNER JOIN userdb ON user_files.userID = userdb.userID 
     WHERE user_files.storedFileName = ?");
@@ -193,23 +187,12 @@ function retrieveFile($conn, $fileName) {
     // Fetch the result into an associative array
     $row = mysqli_fetch_assoc($queryResult);
 
-    if(empty($row)){
-        error_log("Error Log in inc------------------------------");
-        error_log("row in functions.inc.php is empty! ");
-
-        error_log("File name: " . $fileName);
-        error_log("Error Log in inc------------------------------");
-    }
-    
-
-    // Echo the originalFileName for debugging
-    echo "Original FileName: " . $row['originalFileName'];
-
     // Store the result in the $result array
     if ($row) {
         $result['fileID'] = $row['fileID'];
         $result['originalFileName'] = $row['originalFileName'];
         $result['storedFileName'] = $row['storedFileName'];
+        $result['title'] = $row['title']; // Include the title in the result
         $result['uploadDate'] = $row['uploadDate'];
         $result['username'] = $row['username'];
     }
@@ -219,3 +202,44 @@ function retrieveFile($conn, $fileName) {
     header('Content-Type: application/json');
     return $result;
 }
+
+function retrieveFiles($conn, $username) {
+    $result = array();
+
+    // Prepare and execute the query to retrieve file information
+    $stmt = mysqli_prepare($conn, 
+        "SELECT user_files.fileID, user_files.originalFileName, user_files.storedFileName, user_files.title, user_files.uploadDate
+        FROM user_files 
+        INNER JOIN userdb ON user_files.userID = userdb.userID 
+        WHERE userdb.username = ?");
+
+    if (!$stmt) {
+
+        return false;
+    }
+
+    mysqli_stmt_bind_param($stmt, "s", $username);
+
+    if (!mysqli_stmt_execute($stmt)) {
+        return false;
+    }
+
+    $queryResult = mysqli_stmt_get_result($stmt);
+
+    // Fetch all rows into a multidimensional array
+    while ($row = mysqli_fetch_assoc($queryResult)) {
+        $result[] = array(
+            'fileID' => $row['fileID'],
+            'originalFileName' => $row['originalFileName'],
+            'storedFileName' => $row['storedFileName'],
+            'title' => $row['title'],
+            'uploadDate' => $row['uploadDate']
+        );
+    }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
+
+    return $result;
+}
+

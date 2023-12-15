@@ -6,11 +6,10 @@ if (isset($_POST["submit"]) && isset($_SESSION["userid"])) {
 
     // Get the name of the uploaded file
     $fileName = $_FILES['file']['name'];
-    
-    sendFiletoDB($conn,$fileName);
-  
+    $fileTitle = isset($_POST['title']) ? $_POST['title'] : '';
+    sendFiletoDB($conn,$fileName,$fileTitle);
 
 } else {
-    //header("location: ../authForm.php?section=signin&error=yaboi");
-    //exit();
+    header("location: ../index.php");
+    exit();
 }
